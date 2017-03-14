@@ -12,11 +12,7 @@ class HashIndex
     with_tokens(page_contents) do |contents|
       @pages.add(page_id)
       contents.each do |word| 
-        if @store.include? word
-          @store[word].add(page_id)
-        else
-          @store[word] = Set.new([page_id])
-        end
+        @store.merge!({ word => Set.new([page_id]) }) { |_, o, n| o + n }
       end
     end
   end
@@ -29,16 +25,9 @@ class HashIndex
     # require 'byebug'
     with_tokens(phrase) do |toks|
       searchable_words = Set.new(toks).intersection(words)
-      page_lists = searchable_words.lazy.map { |tok| @store[tok] }
-      results = page_lists.reduce({}) do |result, list|
-        list.reduce(result) do |res, page|
-          if res.include? page
-            res[page] += 1
-          else
-            res[page] = 0
-          end
-          res
-        end
+      pages = searchable_words.lazy.flat_map { |tok| @store[tok].to_a }
+      results = pages.reduce({}) do |result, page|
+        result.merge({ page => 1 }) { |_, o, n| o + n }
       end
       results.map { |p, s| Result.new(p, s) }.sort { |r1, r2| r2.score <=> r1.score }
     end
