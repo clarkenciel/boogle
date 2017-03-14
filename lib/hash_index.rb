@@ -22,7 +22,6 @@ class HashIndex
   end
 
   def fetch_matches(phrase)
-    # require 'byebug'
     with_tokens(phrase) do |toks|
       searchable_words = Set.new(toks).intersection(words)
       pages = searchable_words.lazy.flat_map { |tok| @store[tok].to_a }
@@ -31,6 +30,11 @@ class HashIndex
       end
       results.map { |p, s| Result.new(p, s) }.sort { |r1, r2| r2.score <=> r1.score }
     end
+  end
+
+  def dump
+    @store = {}
+    @pages = Set.new
   end
 
   private
