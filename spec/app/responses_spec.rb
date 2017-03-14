@@ -76,11 +76,11 @@ RSpec.describe 'Server responses' do
       expect(last_response).to be_ok
 
       body = JSON.parse(last_response.body, symbolize_names: true)
-      expect(body.size).to eq(2)
-      expect(body.first[:pageId]).to eq(300)
-      expect(body.first[:score]).to eq(4)
-      expect(body.last[:pageId]).to eq(12)
-      expect(body.last[:score]).to eq(1)
+      expect(body[:matches].size).to eq(2)
+      expect(body[:matches].first[:pageId]).to eq(300)
+      expect(body[:matches].first[:score]).to eq(4)
+      expect(body[:matches].last[:pageId]).to eq(12)
+      expect(body[:matches].last[:score]).to eq(1)
     end
 
     it 'rejects query-less requests' do

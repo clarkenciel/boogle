@@ -43,7 +43,7 @@ get '/search' do
   else
     safely do
       matches = INDEX.fetch_matches(query)
-      [200, matches.to_json]
+      [200, { matches: matches }.to_json]
     end
   end
 end
